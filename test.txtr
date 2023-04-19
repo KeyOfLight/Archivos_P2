@@ -1,0 +1,16 @@
+execute >path=1-crear-discos.eea
+execute >path=2-crear-particiones.eea
+execute >path=3-montar-particiones.eea
+execute >path=4-editar-particiones.eea
+execute >path=5-eliminar-particiones-discos.eea
+execute >path=6-reportes-parte-1.eea
+
+execute >path=inicio-parte-2.eea
+
+
+
+execute >path=prueba.eea
+execute >path=montar.eea
+
+
+

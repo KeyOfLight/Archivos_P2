@@ -1,0 +1,32 @@
+rmdisk >path=/home/useer/Disco1.dsk >name=Brotato1
+
+mkdisk >size=10 >unit=m >path=/home/useer/Disco1.dsk
+
+fdisk >size=400 >unit=K >path=/home/useer/Disco1.dsk >name=Brotato1
+
+fdisk >type=e >size=2 >unit=m >path=/home/useer/Disco1.dsk >name=Brotato2
+
+fdisk >type=l  >size=300 >unit=K >fit=ff >path=/home/useer/Disco1.dsk >name=puta2
+
+fdisk >type=l  >size=300 >unit=K >fit=ff >path=/home/useer/Disco1.dsk >name=puta3
+
+fdisk >delete=full >name=puta2 >path=/home/useer/Disco1.dsk
+
+fdisk >delete=full >name=Brotato2 >path=/home/useer/Disco1.dsk
+
+fdisk >size=400 >unit=K >path=/home/useer/Disco1.dsk >name=Brotato3
+
+Mount >name=Brotato1 >path=/home/useer/Disco1.dsk
+
+Mount >name=Brotato2 >path=/home/useer/Disco1.dsk
+
+mkfs >id=270brotato1
+
+login >user=root >pwd=123 >id=270brotato1
+
+mkgrp >name=usuarios
+
+rmgrp >name=usuarios
+
+mkfile >size=15 >path=/home/user/docs/a.txt >r
+

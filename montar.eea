@@ -1,0 +1,5 @@
+Mount >name=Brotato1 >path=/home/useer/Disco1.dsk
+
+Mount >name=Brotato2 >path=/home/useer/Disco1.dsk
+
+mkfs >id=270brotato1
