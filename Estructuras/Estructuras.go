@@ -119,7 +119,6 @@ func (X *ListaMontados) Montar(Nombre string, Path string, StartPoint int64, Siz
 	Montar := PartMounted{}
 	lens := len(X.Montado)
 	Montar.Id = "27" + fmt.Sprint(lens) + Nombre
-	fmt.Println(Montar.Id)
 	Montar.Path = Path
 	Montar.Size = Size
 	Montar.StartPoint = StartPoint
@@ -127,8 +126,9 @@ func (X *ListaMontados) Montar(Nombre string, Path string, StartPoint int64, Siz
 	Listado.Montado = append(X.Montado, Montar)
 }
 
-type User struct {
+type User struct { //Llenar GUID
 	UID        byte
+	GUID       byte
 	Tipo       byte
 	Grupo      [11]byte
 	Pass       [11]byte

@@ -199,7 +199,6 @@ func Mkfs2(Particion Estructuras.PartMounted) {
 		bl_archivo.B_content[0] = 0
 	}
 	copy(bl_archivo.B_content[:], contenido)
-	fmt.Println(string(bl_archivo.B_content[:]))
 
 	//Escribir Inodo Root
 	WriteInode(inodoRoot, SupBlock.S_inode_start, dsk)

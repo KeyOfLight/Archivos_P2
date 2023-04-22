@@ -83,8 +83,14 @@ func ReturnUsser(Datos []string) []Estructuras.User {
 	List := []Estructuras.User{}
 
 	for _, i := range Datos {
-		if strings.Contains(i, "1,U,") {
+		if strings.Contains(i, ",U,") {
 			Splited := strings.Split(i, ",")
+			for _, h := range Datos {
+				if strings.Contains(h, ",G,"+Splited[3]) {
+					Usuario.GUID = h[0]
+					break
+				}
+			}
 			Uid := Splited[0]
 			Usuario.UID = Uid[0]
 			copy(Usuario.Grupo[:], []byte(Splited[2]))

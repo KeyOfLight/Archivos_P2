@@ -3,9 +3,11 @@ package Analizador
 import (
 	"Proyecto2/Estructuras"
 	operaciones "Proyecto2/Operaciones"
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 )
 
@@ -231,6 +233,27 @@ func ReconocerComando(comando string, Parametros []string) {
 			}
 		}
 		operaciones.Mkfile(cmd)
+	} else if comando == "mkdir" {
+		cmd.Nombre = "mkdir"
+
+		for i := 0; i < len(Parametros); i++ {
+			param := Parametros[i]
+			if strings.Contains(param, ">path=") {
+				param = strings.ReplaceAll(param, ">path=", "")
+				param = strings.ReplaceAll(param, "\"", "")
+				cmd.Direccion = param
+			} else if strings.Contains(param, ">r") {
+				param = strings.ReplaceAll(param, ">r", "")
+				param = strings.ReplaceAll(param, "\"", "")
+				cmd.Pwd = "s"
+			}
+		}
+		operaciones.Mkdir(cmd)
+	} else if comando == "pausa" {
+
+		fmt.Println("--------------PAUSA-----------------")
+		scanner := bufio.NewScanner(os.Stdin)
+		scanner.Scan()
 	}
 }
 

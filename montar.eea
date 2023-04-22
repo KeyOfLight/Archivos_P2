@@ -3,3 +3,11 @@ Mount >name=Brotato1 >path=/home/useer/Disco1.dsk
 Mount >name=Brotato2 >path=/home/useer/Disco1.dsk
 
 mkfs >id=270brotato1
+
+login >user=root >pwd=123 >id=270brotato1
+
+mkgrp >name=usuarios
+
+rmgrp >name=usuarios
+
+mkfile >size=15 >path=/home/user/docs/a.txt >r
