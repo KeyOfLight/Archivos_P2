@@ -174,3 +174,19 @@ func OpenMBR(fullpath string) Estructuras.MBR {
 
 	return mbr
 }
+
+func ReadEbr(startpoint int64, dsk *os.File) Estructuras.EBR {
+
+	dsk.Seek((startpoint), 0)
+	tempEbr := Estructuras.EBR{}
+	var sizeMbr int64 = int64(unsafe.Sizeof(tempEbr))
+
+	dataControl := ReadBytes(dsk, int(sizeMbr))
+	bufferControl := bytes.NewBuffer(dataControl)
+	errb := binary.Read(bufferControl, binary.BigEndian, &tempEbr)
+	if errb != nil {
+		log.Fatal("binary.Read failed", errb)
+	}
+
+	return tempEbr
+}

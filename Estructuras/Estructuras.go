@@ -19,6 +19,7 @@ type ParamStruct struct {
 	Fs        string
 	User      string
 	Pwd       string
+	Id        string
 }
 
 type MBR struct {

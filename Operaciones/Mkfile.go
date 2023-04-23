@@ -193,6 +193,7 @@ func findEmptySpaceInCarpet(pos int64, dsk *os.File, PathSeparado []string, Supe
 
 		WriteSBlock(SuperBlock, StartBlockPoint, dsk)
 		WriteBloqueCarpeta(bloqueCarpeta, SuperBlock.S_block_start+SuperBlock.S_block_size*NewPosblock, dsk)
+		AddBlockBm(dsk, SuperBlock)
 
 		return NewPos, NewPosblock
 	}
@@ -212,6 +213,7 @@ func findEmptySpaceInCarpet(pos int64, dsk *os.File, PathSeparado []string, Supe
 
 			WriteSBlock(SuperBlock, StartBlockPoint, dsk)
 			WriteBloqueCarpeta(bloqueCarpeta, SuperBlock.S_block_start+SuperBlock.S_block_size*pos, dsk)
+			AddBlockBm(dsk, SuperBlock)
 
 			return NewPos, 0
 
@@ -253,6 +255,7 @@ func MkInodeCarpeta(posInode int64, dsk *os.File, size int64, SuperBlock Estruct
 	}
 	StartInode := SuperBlock.S_inode_start + SuperBlock.S_inode_size*posInode
 	WriteInode(NewinodoArchivo, StartInode, dsk)
+	AddInodeBm(dsk, SuperBlock)
 
 }
 
