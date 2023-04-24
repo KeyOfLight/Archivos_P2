@@ -263,21 +263,21 @@ func ReconocerComando(comando string, Parametros []string) {
 				param = strings.ReplaceAll(param, ">path=", "")
 				param = strings.ReplaceAll(param, "\"", "")
 				cmd.Direccion = param
-			} else if strings.Contains(param, ">name") {
-				param = strings.ReplaceAll(param, ">name", "")
+			} else if strings.Contains(param, ">name=") {
+				param = strings.ReplaceAll(param, ">name=", "")
 				param = strings.ReplaceAll(param, "\"", "")
 				cmd.Nombre = param
-			} else if strings.Contains(param, ">id") {
-				param = strings.ReplaceAll(param, ">id", "")
+			} else if strings.Contains(param, ">id=") {
+				param = strings.ReplaceAll(param, ">id=", "")
 				param = strings.ReplaceAll(param, "\"", "")
 				cmd.Id = param
-			} else if strings.Contains(param, ">ruta") {
-				param = strings.ReplaceAll(param, ">ruta", "")
+			} else if strings.Contains(param, ">ruta=") {
+				param = strings.ReplaceAll(param, ">ruta=", "")
 				param = strings.ReplaceAll(param, "\"", "")
 				cmd.Pwd = param
 			}
 		}
-		operaciones.Mkdir(cmd)
+		operaciones.Reportes(cmd)
 	}
 }
 

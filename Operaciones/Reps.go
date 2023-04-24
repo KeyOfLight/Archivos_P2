@@ -3,6 +3,8 @@ package operaciones
 import (
 	"Proyecto2/Estructuras"
 	"fmt"
+	"log"
+	"math"
 	"os"
 )
 
@@ -11,13 +13,43 @@ func Reportes(parameters Estructuras.ParamStruct) {
 	if parameters.Nombre == "disk" {
 		RepDisk(parameters)
 	} else if parameters.Nombre == "tree" {
-
+		RepTree(parameters)
 	} else if parameters.Nombre == "file" {
 		RepFile(parameters)
-
 	} else if parameters.Nombre == "sb" {
 		RepSb(parameters)
 	}
+}
+
+func RepTree(parameters Estructuras.ParamStruct) {
+
+	var Listado = Estructuras.ListaMontados{}
+	Listado = (&Listado).GetLista()
+	var Uss = Estructuras.PartMounted{}
+
+	for _, i := range Listado.Montado {
+		if parameters.Id == i.Id {
+			Uss = i
+			break
+		}
+	}
+
+	StartPoint := Uss.StartPoint
+	path := Uss.Path
+
+	dsk, err := os.OpenFile(path, os.O_RDWR, 0777)
+	defer dsk.Close()
+
+	if err != nil {
+		fmt.Println("No se pudo encontrar el archivo deseado")
+		os.Exit(1)
+	}
+
+	Diagrama := "digraph SBloques{\n node [shape=plaintext];\nrankdir=LR;\n "
+
+	SuperBlock := ReadSBlock(Estructuras.Sblock{}, StartPoint, dsk)
+	Diagrama += MkTree(SuperBlock, dsk)
+
 }
 
 func RepFile(parameters Estructuras.ParamStruct) {
@@ -119,32 +151,49 @@ func RepDisk(parammeters Estructuras.ParamStruct) {
 	Diagrama += "struct3 [label=<\n<TABLE BORDER=\"1\" CELLBORDER=\"1\" CELLSPACING=\"1\" CELLPADDING=\"4\">\n"
 	Diagrama += "<TR>\n<TD BGCOLOR=\"purple\" ROWSPAN=\"2\">MBR</TD>\n"
 
-	ocupado := 0
+	ocupado := int64(0)
 	ExtPart := Estructuras.Particion{}
 	for i := 0; i < 4; i++ {
 		Act := MBR.Mbr_partition[i]
 		if Act.Part_status == '1' {
 			if Act.Part_type == 'e' {
 				ExtPart = MBR.Mbr_partition[i]
-				ocupado += int(Act.Part_size)
+				ocupado += int64(Act.Part_size)
 				Externos := ContarEBRs(Act.Part_start, dsk, 0)
-				Diagrama += "<TD COLSPAN=\"" + fmt.Sprint(Externos*2) + "\">Extendida</TD>\n"
+				Diagrama += "<TD COLSPAN=\"" + fmt.Sprint(Externos*3) + "\">Extendida</TD>\n"
 			} else {
-				procentaje := Act.Part_size * (100 / MBR.Mbr_tamano)
-				ocupado += int(Act.Part_size)
-				Diagrama += "<TD ROWSPAN=\"2\">Primaria <BR/>" + fmt.Sprint(procentaje) + "%</TD>\n"
+				var porcentaje float64
+				porcentaje = float64(Act.Part_size) / float64(MBR.Mbr_tamano)
+				porcentaje = porcentaje * 100
+				ocupado += (Act.Part_size)
+				Diagrama += "<TD ROWSPAN=\"2\">Primaria <BR/>" + fmt.Sprint(math.Round(porcentaje)) + "%</TD>\n"
 			}
 
 		} else {
-			procentaje := MBR.Mbr_tamano - int64(ocupado)*100/MBR.Mbr_tamano
-			Diagrama += "<TD ROWSPAN=\"2\">Libre <BR/>" + fmt.Sprint(procentaje) + "%</TD>\n"
+			procentaje := (float64(MBR.Mbr_tamano) - float64(ocupado)) / float64(MBR.Mbr_tamano)
+			procentaje = procentaje * 100
+			Diagrama += "<TD ROWSPAN=\"2\">Libre <BR/>" + fmt.Sprint(math.Round(procentaje)) + "%</TD>\n"
 		}
 	}
 
 	Diagrama += "</TR>\n"
 	Diagrama += "<TR>\n"
-	Diagrama += DiskEBR(ExtPart.Part_start, MBR, dsk, 0, 0)
+	Diagrama += DiskEBR(ExtPart.Part_start, MBR, dsk, ExtPart.Part_size, 0)
 	Diagrama += "</TR>\n</TABLE>>];\n}"
+
+	crearDirectorio(parammeters.Direccion)
+	f, err := os.Create(parammeters.Direccion)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	n, err := f.WriteString(Diagrama + "\n")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("wrote %d bytes\n", n)
+	f.Sync()
 
 }
 
@@ -156,12 +205,15 @@ func DiskEBR(Part int64, mbr Estructuras.MBR, dsk *os.File, total int64, Written
 
 	if tempebr.Part_status == '1' {
 		escrito += tempebr.Part_size
-		porcentaje := tempebr.Part_size * (100 / mbr.Mbr_tamano)
-		Diagrama += "<TD BGCOLOR=\"lightblue\" >EBR</TD><TD>Logica <BR/> " + fmt.Sprint(porcentaje) + " % </TD>"
+		porcentaje := float64(tempebr.Part_size) / float64(mbr.Mbr_tamano)
+		porcentaje = porcentaje * 100
+		Diagrama += "<TD BGCOLOR=\"lightblue\" >EBR</TD><TD>Logica <BR/> " + fmt.Sprint(math.Round(porcentaje)) + " % </TD>"
 		Diagrama += DiskEBR(tempebr.Part_next, mbr, dsk, total, escrito)
 	} else {
-		porcentaje := (total - escrito) * 100 / mbr.Mbr_tamano
-		Diagrama += "<TD BGCOLOR=\"lightblue\" >EBR</TD><TD>Libre  <BR/> " + fmt.Sprint(porcentaje) + " % </TD>"
+		porcentaje := float64(total - escrito)
+		porcentaje = porcentaje / float64(mbr.Mbr_tamano)
+		porcentaje = porcentaje * 100
+		Diagrama += "<TD BGCOLOR=\"lightblue\" >EBR</TD><TD>Libre  <BR/> " + fmt.Sprint(math.Round(porcentaje)) + " % </TD>"
 	}
 
 	return Diagrama

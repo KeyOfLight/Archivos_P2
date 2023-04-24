@@ -100,6 +100,7 @@ func crearDirectorio(path string) {
 	if _, err := os.Stat(directorio); os.IsNotExist(err) {
 		err = os.MkdirAll(directorio, 0777)
 		if err != nil {
+			println(err.Error())
 			panic(err)
 		}
 	}
