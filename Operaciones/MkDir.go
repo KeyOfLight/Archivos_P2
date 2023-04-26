@@ -22,11 +22,10 @@ func Mkdir(parameters Estructuras.ParamStruct) {
 		os.Exit(1)
 	}
 
-	SuperBlock := ReadSBlock(Estructuras.Sblock{}, StartPoint, dsk)
 	pathSeparado := strings.Split(VirtualPath, "/")
 	if pathSeparado[0] == "" {
 		pathSeparado = append(pathSeparado[1:])
 	}
 
-	SrchInodo(0, dsk, pathSeparado, SuperBlock, true, 0)
+	SrchInodo(0, dsk, pathSeparado, StartPoint, true, 0)
 }

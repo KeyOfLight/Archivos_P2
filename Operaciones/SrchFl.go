@@ -28,8 +28,7 @@ func LeerArchivoMkfs(SuperBlock Estructuras.Sblock, Path string, dsk *os.File) s
 }
 
 func ReadBlckCarpetas(pos int64, dsk *os.File, PathSeparado []string, SuperBlock Estructuras.Sblock) string {
-	bloqueCarpeta := Estructuras.BloqueCarpetas{}
-	bloqueCarpeta = ReadBloqueCarpeta(bloqueCarpeta, SuperBlock.S_block_start+SuperBlock.S_block_size*pos, dsk)
+	bloqueCarpeta := ReadBloqueCarpeta(Estructuras.BloqueCarpetas{}, SuperBlock.S_block_start+SuperBlock.S_block_size*pos, dsk)
 
 	DatosArch := ""
 	for _, i := range bloqueCarpeta.B_content {

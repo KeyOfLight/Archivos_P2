@@ -41,7 +41,6 @@ func Mkfile(parameters Estructuras.ParamStruct) {
 		pivote++
 	}
 
-	SuperBlock := ReadSBlock(Estructuras.Sblock{}, StartPoint, dsk)
 	pathSeparado := strings.Split(VirtualPath, "/")
 	if pathSeparado[0] == "" {
 		pathSeparado = append(pathSeparado[1:])
@@ -67,18 +66,20 @@ func Mkfile(parameters Estructuras.ParamStruct) {
 		r = true
 	}
 
-	pos := SrchInodo(0, dsk, pathSeparado, SuperBlock, r, size)
+	pos := SrchInodo(0, dsk, pathSeparado, StartPoint, r, size)
 
 	if pos == -1 {
 		fmt.Println("No se pudo encontrar la ubicacion de archivo")
 		return
 	}
 
+	SuperBlock := ReadSBlock(Estructuras.Sblock{}, StartPoint, dsk)
 	WrtArchivoMkfs(SuperBlock, VirtualPath, dsk, contenido, true)
 }
 
-func SrchBlckCarpetas(pos int64, dsk *os.File, PathSeparado []string, SuperBlock Estructuras.Sblock, CreateFull bool, Size int64) (Pos int64, Econtrado bool) {
+func SrchBlckCarpetas(pos int64, dsk *os.File, PathSeparado []string, SuperBlockSp int64, CreateFull bool, Size int64) (Pos int64, Econtrado bool) {
 	bloqueCarpeta := Estructuras.BloqueCarpetas{}
+	SuperBlock := ReadSBlock(Estructuras.Sblock{}, SuperBlockSp, dsk)
 	bloqueCarpeta = ReadBloqueCarpeta(bloqueCarpeta, SuperBlock.S_block_start+SuperBlock.S_block_size*pos, dsk)
 	Coincidencia_Path := false
 
@@ -95,14 +96,15 @@ func SrchBlckCarpetas(pos int64, dsk *os.File, PathSeparado []string, SuperBlock
 			pos := i.B_inodo
 			PathSeparado = PathSeparado[1:]
 			Coincidencia_Path = true
-			return SrchInodo((int64(pos) - 1), dsk, PathSeparado, SuperBlock, true, Size), Coincidencia_Path
+			return SrchInodo((int64(pos) - 1), dsk, PathSeparado, SuperBlockSp, true, Size), Coincidencia_Path
 		}
 	}
 
 	return -1, Coincidencia_Path
 }
 
-func SrchInodo(pos int64, dsk *os.File, PathSeparado []string, SuperBlock Estructuras.Sblock, CreateFull bool, Size int64) int64 {
+func SrchInodo(pos int64, dsk *os.File, PathSeparado []string, SuperBlockSp int64, CreateFull bool, Size int64) int64 {
+	SuperBlock := ReadSBlock(Estructuras.Sblock{}, SuperBlockSp, dsk)
 	StartInode := SuperBlock.S_inode_start + SuperBlock.S_inode_size*pos
 	InodoArchivo := ReadInode(Estructuras.I_node{}, StartInode, dsk)
 	Encontrado := false
@@ -112,7 +114,7 @@ func SrchInodo(pos int64, dsk *os.File, PathSeparado []string, SuperBlock Estruc
 	} else {
 		for _, i := range InodoArchivo.I_block {
 			if (int64(i) - 1) != -1 {
-				ReturnedPos, Encontrado = SrchBlckCarpetas((int64(i) - 1), dsk, PathSeparado, SuperBlock, CreateFull, Size)
+				ReturnedPos, Encontrado = SrchBlckCarpetas((int64(i) - 1), dsk, PathSeparado, SuperBlockSp, CreateFull, Size)
 			}
 		}
 		if Encontrado {
@@ -126,8 +128,7 @@ func SrchInodo(pos int64, dsk *os.File, PathSeparado []string, SuperBlock Estruc
 		var Retornado = int64(-1)
 		for i := 0; i < 16; i++ {
 			if int64(InodoArchivo.I_block[i])-1 != -1 {
-				Retornado, _ = findEmptySpaceInCarpet(int64(InodoArchivo.I_block[i])-1, dsk, PathSeparado, SuperBlock, Size, false)
-
+				Retornado, _ = findEmptySpaceInCarpet(int64(InodoArchivo.I_block[i])-1, dsk, PathSeparado, SuperBlockSp, Size, false)
 				Next := PathSeparado[1]
 				if strings.Contains(Next, ".") {
 					MkInodeCarpeta(Retornado, dsk, Size, SuperBlock, true)
@@ -135,7 +136,7 @@ func SrchInodo(pos int64, dsk *os.File, PathSeparado []string, SuperBlock Estruc
 					MkInodeCarpeta(Retornado, dsk, Size, SuperBlock, false)
 				}
 
-				SrchBlckCarpetas(int64(InodoArchivo.I_block[i])-1, dsk, PathSeparado, SuperBlock, CreateFull, Size)
+				SrchBlckCarpetas(int64(InodoArchivo.I_block[i])-1, dsk, PathSeparado, SuperBlockSp, CreateFull, Size)
 			}
 
 			if Retornado != -1 {
@@ -144,7 +145,7 @@ func SrchInodo(pos int64, dsk *os.File, PathSeparado []string, SuperBlock Estruc
 
 			if int64(InodoArchivo.I_block[i])-1 == -1 {
 				var posBlock int64
-				Retornado, posBlock = findEmptySpaceInCarpet(int64(InodoArchivo.I_block[i])-1, dsk, PathSeparado, SuperBlock, Size, true)
+				Retornado, posBlock = findEmptySpaceInCarpet(int64(InodoArchivo.I_block[i])-1, dsk, PathSeparado, SuperBlockSp, Size, true)
 				Next := PathSeparado[1]
 				InodoArchivo.I_block[i] = byte(posBlock + 1)
 				WriteInode(InodoArchivo, SuperBlock.S_inode_start+SuperBlock.S_inode_size*pos, dsk)
@@ -153,7 +154,7 @@ func SrchInodo(pos int64, dsk *os.File, PathSeparado []string, SuperBlock Estruc
 					MkInodeCarpeta(Retornado, dsk, Size, SuperBlock, true)
 				} else {
 					MkInodeCarpeta(Retornado, dsk, Size, SuperBlock, false)
-					SrchBlckCarpetas(int64(InodoArchivo.I_block[i])-1, dsk, PathSeparado, SuperBlock, CreateFull, Size)
+					SrchBlckCarpetas(int64(InodoArchivo.I_block[i])-1, dsk, PathSeparado, SuperBlockSp, CreateFull, Size)
 				}
 
 			}
@@ -165,16 +166,18 @@ func SrchInodo(pos int64, dsk *os.File, PathSeparado []string, SuperBlock Estruc
 	return -1
 }
 
-func findEmptySpaceInCarpet(pos int64, dsk *os.File, PathSeparado []string, SuperBlock Estructuras.Sblock, Size int64, Inicial bool) (PosNueva int64, PosCarpeta int64) {
-
+func findEmptySpaceInCarpet(pos int64, dsk *os.File, PathSeparado []string, SuperBlockSp int64, Size int64, Inicial bool) (PosNueva int64, PosCarpeta int64) {
+	SuperBlock := ReadSBlock(Estructuras.Sblock{}, SuperBlockSp, dsk)
 	if Inicial {
 		bloqueCarpeta := Estructuras.BloqueCarpetas{}
 
-		NewPosblock := SuperBlock.S_blocks_count - SuperBlock.S_free_blocks_count
+		NewPosblock := SuperBlock.S_first_blo + 1
+		SuperBlock.S_first_blo += 1
 		SuperBlock.S_free_blocks_count = SuperBlock.S_free_blocks_count - 1
 
 		Strong := PathSeparado[0]
-		NewPos := SuperBlock.S_inodes_count - SuperBlock.S_free_inodes_count
+		NewPos := SuperBlock.S_firts_ino + 1
+		SuperBlock.S_firts_ino += 1
 
 		SuperBlock.S_free_inodes_count = SuperBlock.S_free_inodes_count - 1
 		StartBlockPoint := SuperBlock.S_bm_inode_start - int64(unsafe.Sizeof(Estructuras.Sblock{}))
@@ -204,11 +207,12 @@ func findEmptySpaceInCarpet(pos int64, dsk *os.File, PathSeparado []string, Supe
 	for i := 0; i < 4; i++ {
 		if int64(bloqueCarpeta.B_content[i].B_inodo)-1 == -1 {
 			Strong := PathSeparado[0]
-			NewPos := SuperBlock.S_inodes_count - SuperBlock.S_free_inodes_count
+			NewPos := SuperBlock.S_firts_ino + 1
+			SuperBlock.S_firts_ino += 1
 			copy(bloqueCarpeta.B_content[i].B_name[:], []byte(Strong))
 			bloqueCarpeta.B_content[i].B_inodo = byte(NewPos + 1)
 
-			SuperBlock.S_free_blocks_count = SuperBlock.S_free_blocks_count - 1
+			SuperBlock.S_free_inodes_count = SuperBlock.S_free_inodes_count - 1
 			StartBlockPoint := SuperBlock.S_bm_inode_start - int64(unsafe.Sizeof(Estructuras.Sblock{}))
 
 			WriteSBlock(SuperBlock, StartBlockPoint, dsk)

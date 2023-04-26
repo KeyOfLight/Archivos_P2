@@ -34,4 +34,4 @@ rep >id=270brotato1 >Path=/home/useer/reports/reporte1.dot >name=disk
 
 rep >id=270brotato1 >Path=/home/useer/reports/reporte2.dot >name=sb
 
-rep >id=270brotato1 >Path=/home/useer/reports/reporte3.dot >name=file >ruta=/home/user/docs/a.txt
+rep >id=270brotato1 >Path=/home/useer/reports/reporte3.dot >name=file >ruta=home/user/docs/a.txt

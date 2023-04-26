@@ -88,15 +88,15 @@ func WrtFileBlocks(Inodo Estructuras.I_node, dsk *os.File, SuperBlock Estructura
 					}
 				}
 				WriteBloqueArchivo(bl_archivo, pos, dsk)
+				println(pos)
 			}
 		} else if (int64(Inodo.I_block[i]) - 1) == -1 {
-			Contador := SuperBlock.S_blocks_count - SuperBlock.S_free_blocks_count
+			NewPosblock := SuperBlock.S_first_blo + 1
+			SuperBlock.S_first_blo += 1
 			SuperBlock.S_free_blocks_count = SuperBlock.S_free_blocks_count - 1
-			Inodo.I_block[i] = byte(Contador + 1)
+			Inodo.I_block[i] = byte(NewPosblock + 1)
 			StartInode := SuperBlock.S_inode_start + SuperBlock.S_inode_size*PosInodo
 			WriteInode(Inodo, StartInode, dsk)
-			is := (int64(i) - 1)
-			pos := SuperBlock.S_block_start + (int64(unsafe.Sizeof(Estructuras.BloqueArchivos{})) * is)
 
 			StartBlockPoint := SuperBlock.S_bm_inode_start - int64(unsafe.Sizeof(Estructuras.Sblock{}))
 			WriteSBlock(SuperBlock, StartBlockPoint, dsk)
@@ -107,11 +107,11 @@ func WrtFileBlocks(Inodo Estructuras.I_node, dsk *os.File, SuperBlock Estructura
 					bl_archivo.B_content[i] = byte(chars[0])
 					chars = append(chars[1:])
 				} else {
-					WriteBloqueArchivo(bl_archivo, pos, dsk)
+					WriteBloqueArchivo(bl_archivo, SuperBlock.S_block_start+SuperBlock.S_block_size*NewPosblock, dsk)
 					return
 				}
 			}
-			WriteBloqueArchivo(bl_archivo, pos, dsk)
+			WriteBloqueArchivo(bl_archivo, NewPosblock, dsk)
 		}
 	}
 
