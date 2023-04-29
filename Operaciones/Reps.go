@@ -45,10 +45,18 @@ func RepTree(parameters Estructuras.ParamStruct) {
 		os.Exit(1)
 	}
 
-	Diagrama := "digraph SBloques{\n node [shape=plaintext];\nrankdir=LR;\n "
+	Diagrama := "digraph Tree{\n node [shape=plaintext];\nrankdir=LR;\n "
 
 	SuperBlock := ReadSBlock(Estructuras.Sblock{}, StartPoint, dsk)
 	Diagrama += MkTree(SuperBlock, dsk)
+
+	Diagrama += "}"
+
+	d1 := []byte(Diagrama)
+	err3 := os.WriteFile(parameters.Direccion, d1, 0644)
+	if err3 != nil {
+		panic(err3)
+	}
 
 }
 
@@ -67,14 +75,24 @@ func RepFile(parameters Estructuras.ParamStruct) {
 		os.Exit(1)
 	}
 
+	Diagrama := "digraph File{\n node [shape=plaintext];\nrankdir=LR;\n "
+	Diagrama += "SBlock[label=<\n<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"1\" CELLPADDING=\"4\">\n"
+	Diagrama += "<TR>\n<TD BGCOLOR=\"purple\">File</TD>\n</TR>\n"
+
 	SuperBlock := ReadSBlock(Estructuras.Sblock{}, StartPoint, dsk)
 	Info := LeerArchivoMkfs(SuperBlock, parameters.Pwd, dsk)
 
-	d1 := []byte(Info)
+	Diagrama += "<TR>\n<TD BGCOLOR=\"lightblue\">" + string(Info) + " </TD>\n</TR>\n"
+	Diagrama += "</TABLE>>];\n"
+
+	Diagrama += "}"
+	d1 := []byte(Diagrama)
 	err3 := os.WriteFile(parameters.Direccion, d1, 0644)
 	if err3 != nil {
 		panic(err3)
 	}
+
+	println("done")
 }
 
 func RepSb(parameters Estructuras.ParamStruct) {

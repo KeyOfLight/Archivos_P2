@@ -75,7 +75,15 @@ func ReadFileBlocks(Inodo Estructuras.I_node, dsk *os.File, SuperBlock Estructur
 			is := (int64(i) - 1)
 			pos := SuperBlock.S_block_start + (int64(unsafe.Sizeof(Estructuras.BloqueArchivos{})) * is)
 			bl_archivo := ReadBloqueArchivo(Estructuras.BloqueArchivos{}, pos, dsk)
-			DatosArch += string((bl_archivo.B_content[:]))
+			data := ""
+			for i := 0; i < 63; i++ {
+				actual := bl_archivo.B_content[i]
+				if actual != 0 {
+					data += string(bl_archivo.B_content[i])
+				}
+			}
+
+			DatosArch += string(data)
 		}
 	}
 
