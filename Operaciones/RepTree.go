@@ -70,7 +70,7 @@ func TreeInodoArch(pos int64, dsk *os.File, SuperBlock Estructuras.Sblock) strin
 	InodoArchivo := ReadInode(Estructuras.I_node{}, SuperBlock.S_inode_start+SuperBlock.S_inode_size*pos, dsk)
 
 	DatosArch := "I" + fmt.Sprint(pos) + "[label=<\n<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"1\" CELLPADDING=\"4\">\n"
-	DatosArch += "<TR>\n<TD BGCOLOR=\"purple\" COLSPAN=\"2\">I" + fmt.Sprint(pos) + "</TD>\n</TR>\n"
+	DatosArch += "<TR>\n<TD BGCOLOR=\"purple\" COLSPAN=\"2\">Inodo " + fmt.Sprint(pos) + "</TD>\n</TR>\n"
 	DatosArch += "<TR>\n<TD BGCOLOR=\"lightblue\">I_uid</TD><TD>" + fmt.Sprint(InodoArchivo.I_uid) + " </TD>\n</TR>\n"
 	DatosArch += "<TR>\n<TD BGCOLOR=\"lightblue\">I_gid</TD><TD>" + fmt.Sprint(InodoArchivo.I_gid) + " </TD>\n</TR>\n"
 	DatosArch += "<TR>\n<TD BGCOLOR=\"lightblue\">I_size</TD><TD>" + fmt.Sprint(InodoArchivo.I_size) + " </TD>\n</TR>\n"
@@ -109,7 +109,7 @@ func TreeFileBlocks(Inodo Estructuras.I_node, dsk *os.File, SuperBlock Estructur
 			is := (int64(act) - 1)
 			DatosArch += "I" + fmt.Sprint(Father) + "->" + "B" + fmt.Sprint((int64(act) - 1)) + "\n"
 			DatosArch += "B" + fmt.Sprint((int64(act) - 1)) + "[label=<\n<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"1\" CELLPADDING=\"4\">\n"
-			DatosArch += "<TR>\n<TD BGCOLOR=\"purple\">Bloque" + fmt.Sprint((int64(act) - 1)) + "</TD>\n</TR>\n"
+			DatosArch += "<TR>\n<TD BGCOLOR=\"purple\">Bloque Archivo " + fmt.Sprint((int64(act) - 1)) + "</TD>\n</TR>\n"
 			pos := SuperBlock.S_block_start + (int64(unsafe.Sizeof(Estructuras.BloqueArchivos{})) * is)
 			bl_archivo := ReadBloqueArchivo(Estructuras.BloqueArchivos{}, pos, dsk)
 			DatosArch += "<TR>\n<TD>" + remove0s((bl_archivo.B_content[:])) + "</TD>\n</TR>\n"

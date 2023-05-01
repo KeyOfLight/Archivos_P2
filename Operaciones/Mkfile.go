@@ -183,7 +183,7 @@ func findEmptySpaceInCarpet(pos int64, dsk *os.File, PathSeparado []string, Supe
 		StartBlockPoint := SuperBlock.S_bm_inode_start - int64(unsafe.Sizeof(Estructuras.Sblock{}))
 
 		copy(bloqueCarpeta.B_content[2].B_name[:], []byte(Strong))
-		bloqueCarpeta.B_content[2].B_inodo = byte(NewPos + 1)
+		bloqueCarpeta.B_content[2].B_inodo = byte(NewPos)
 
 		bloqueCarpeta.B_content[0].B_inodo = 1
 		copy(bloqueCarpeta.B_content[0].B_name[:], []byte("."))
@@ -210,7 +210,7 @@ func findEmptySpaceInCarpet(pos int64, dsk *os.File, PathSeparado []string, Supe
 			NewPos := SuperBlock.S_firts_ino + 1
 			SuperBlock.S_firts_ino += 1
 			copy(bloqueCarpeta.B_content[i].B_name[:], []byte(Strong))
-			bloqueCarpeta.B_content[i].B_inodo = byte(NewPos + 1)
+			bloqueCarpeta.B_content[i].B_inodo = byte(NewPos)
 
 			SuperBlock.S_free_inodes_count = SuperBlock.S_free_inodes_count - 1
 			StartBlockPoint := SuperBlock.S_bm_inode_start - int64(unsafe.Sizeof(Estructuras.Sblock{}))

@@ -6,6 +6,8 @@ import (
 	"log"
 	"math"
 	"os"
+	"os/exec"
+	"strings"
 )
 
 func Reportes(parameters Estructuras.ParamStruct) {
@@ -58,6 +60,15 @@ func RepTree(parameters Estructuras.ParamStruct) {
 		panic(err3)
 	}
 
+	Limpio := RemoveDot(parameters.Direccion)
+
+	cmd := exec.Command("dot", parameters.Direccion, "-Tpdf", "-o", Limpio+".pdf")
+	errcmd := cmd.Run()
+	if errcmd != nil {
+		fmt.Println("error", errcmd.Error())
+		return
+	}
+
 }
 
 func RepFile(parameters Estructuras.ParamStruct) {
@@ -92,7 +103,14 @@ func RepFile(parameters Estructuras.ParamStruct) {
 		panic(err3)
 	}
 
-	println("done")
+	Limpio := RemoveDot(parameters.Direccion)
+
+	cmd := exec.Command("dot", parameters.Direccion, "-Tpdf", "-o", Limpio+".pdf")
+	errcmd := cmd.Run()
+	if errcmd != nil {
+		fmt.Println("error", errcmd.Error())
+		return
+	}
 }
 
 func RepSb(parameters Estructuras.ParamStruct) {
@@ -146,6 +164,15 @@ func RepSb(parameters Estructuras.ParamStruct) {
 	err3 := os.WriteFile(parameters.Direccion, d1, 0644)
 	if err3 != nil {
 		panic(err3)
+	}
+
+	Limpio := RemoveDot(parameters.Direccion)
+
+	cmd := exec.Command("dot", parameters.Direccion, "-Tpdf", "-o", Limpio+".pdf")
+	errcmd := cmd.Run()
+	if errcmd != nil {
+		fmt.Println("error", errcmd.Error())
+		return
 	}
 }
 
@@ -210,6 +237,15 @@ func RepDisk(parammeters Estructuras.ParamStruct) {
 		log.Fatal(err)
 	}
 
+	Limpio := RemoveDot(parammeters.Direccion)
+
+	cmd := exec.Command("dot", parammeters.Direccion, "-Tpdf", "-o", Limpio+".pdf")
+	errcmd := cmd.Run()
+	if errcmd != nil {
+		fmt.Println("error", errcmd.Error())
+		return
+	}
+
 	fmt.Printf("wrote %d bytes\n", n)
 	f.Sync()
 
@@ -245,4 +281,14 @@ func ContarEBRs(StartPoint int64, dsk *os.File, Ocupado int64) int64 {
 		return ContarEBRs(tempebr.Part_next, dsk, Ocupado)
 	}
 	return Ocupado
+}
+
+func RemoveDot(Ruta string) string {
+	retorno := ""
+	SeparadoLineas := strings.Split(Ruta, ".dot")
+	for _, linea := range SeparadoLineas {
+		retorno += linea
+	}
+
+	return retorno
 }
