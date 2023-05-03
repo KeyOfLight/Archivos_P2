@@ -32,6 +32,7 @@ func MountPart(parameters Estructuras.ParamStruct) {
 
 			(&Listado).Montar(parameters.Nombre, fullpath, mbr.Mbr_partition[i].Part_start, mbr.Mbr_partition[i].Part_size, (mbr.Mbr_partition[i].Part_type))
 			fmt.Println("Se ha montado la particion")
+			fmt.Println("Id: " + parameters.Nombre)
 			return
 		}
 	}

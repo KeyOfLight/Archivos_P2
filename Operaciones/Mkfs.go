@@ -82,17 +82,6 @@ func Mkfs2(Particion Estructuras.PartMounted) {
 		SupBlock.S_inode_start = StartPoint + int64(unsafe.Sizeof(Estructuras.Sblock{})) + int64(Estructs_Num) + int64(num_block) + int64(unsafe.Sizeof(Estructuras.EBR{}))
 
 		dsk.Seek(PosSupB, 0)
-		for i := 0; i < int(Particion.Size)-int(unsafe.Sizeof(Estructuras.EBR{})); i++ {
-
-			_, err := dsk.Write(binario.Bytes())
-
-			if err != nil {
-				log.Fatal(err)
-			}
-			dsk.Seek(PosSupB+int64(i), 0)
-		}
-
-		dsk.Seek(PosSupB, 0)
 	} else {
 
 		SupBlock.S_block_start = StartPoint + int64(unsafe.Sizeof(Estructuras.Sblock{})) + int64(Estructs_Num) + int64(num_block) + (int64(unsafe.Sizeof(Estructuras.I_node{})) * int64(Estructs_Num))
@@ -100,15 +89,6 @@ func Mkfs2(Particion Estructuras.PartMounted) {
 		SupBlock.S_bm_block_start = StartPoint + int64(unsafe.Sizeof(Estructuras.Sblock{})) + int64(Estructs_Num)
 		SupBlock.S_inode_start = StartPoint + int64(unsafe.Sizeof(Estructuras.Sblock{})) + int64(Estructs_Num) + int64(num_block)
 
-		dsk.Seek(StartPoint, 0)
-		for i := 0; i < int(Particion.Size)-int(unsafe.Sizeof(Estructuras.EBR{})); i++ {
-
-			_, err := dsk.Write(binario.Bytes())
-			if err != nil {
-				log.Fatal(err)
-			}
-			dsk.Seek(StartPoint+int64(i), 0)
-		}
 		dsk.Seek(StartPoint, 0)
 	}
 

@@ -12,29 +12,22 @@ import (
 
 func Reportes(parameters Estructuras.ParamStruct) {
 
-	if parameters.Nombre == "disk" {
+	if strings.Contains(parameters.Nombre, "disk") {
 		RepDisk(parameters)
-	} else if parameters.Nombre == "tree" {
+	} else if strings.Contains(parameters.Nombre, "tree") {
 		RepTree(parameters)
-	} else if parameters.Nombre == "file" {
+	} else if strings.Contains(parameters.Nombre, "file") {
 		RepFile(parameters)
-	} else if parameters.Nombre == "sb" {
+	} else if strings.Contains(parameters.Nombre, "sb") {
 		RepSb(parameters)
 	}
 }
 
 func RepTree(parameters Estructuras.ParamStruct) {
 
-	var Listado = Estructuras.ListaMontados{}
-	Listado = (&Listado).GetLista()
-	var Uss = Estructuras.PartMounted{}
-
-	for _, i := range Listado.Montado {
-		if parameters.Id == i.Id {
-			Uss = i
-			break
-		}
-	}
+	var ListaMontados = Estructuras.ListaMontados{}
+	ListaMontados = (&ListaMontados).GetLista()
+	Uss := SearchID(parameters.Id, ListaMontados)
 
 	StartPoint := Uss.StartPoint
 	path := Uss.Path
@@ -47,6 +40,8 @@ func RepTree(parameters Estructuras.ParamStruct) {
 		os.Exit(1)
 	}
 
+	mbr := OpenMBR(path)
+	print(mbr.Dsk_fit)
 	Diagrama := "digraph Tree{\n node [shape=plaintext];\nrankdir=LR;\n "
 
 	SuperBlock := ReadSBlock(Estructuras.Sblock{}, StartPoint, dsk)
@@ -54,6 +49,7 @@ func RepTree(parameters Estructuras.ParamStruct) {
 
 	Diagrama += "}"
 
+	crearDirectorio(parameters.Direccion)
 	d1 := []byte(Diagrama)
 	err3 := os.WriteFile(parameters.Direccion, d1, 0644)
 	if err3 != nil {
@@ -73,9 +69,10 @@ func RepTree(parameters Estructuras.ParamStruct) {
 
 func RepFile(parameters Estructuras.ParamStruct) {
 
-	var Uss = Estructuras.User{}
-	Uss = (&Uss).Getusser()
-	StartPoint := Uss.Startpoint
+	var ListaMontados = Estructuras.ListaMontados{}
+	ListaMontados = (&ListaMontados).GetLista()
+	Uss := SearchID(parameters.Id, ListaMontados)
+	StartPoint := Uss.StartPoint
 	path := Uss.Path
 
 	dsk, err := os.OpenFile(path, os.O_RDWR, 0777)
@@ -97,6 +94,7 @@ func RepFile(parameters Estructuras.ParamStruct) {
 	Diagrama += "</TABLE>>];\n"
 
 	Diagrama += "}"
+	crearDirectorio(parameters.Direccion)
 	d1 := []byte(Diagrama)
 	err3 := os.WriteFile(parameters.Direccion, d1, 0644)
 	if err3 != nil {
@@ -114,10 +112,11 @@ func RepFile(parameters Estructuras.ParamStruct) {
 }
 
 func RepSb(parameters Estructuras.ParamStruct) {
-	var Uss = Estructuras.User{}
-	Uss = (&Uss).Getusser()
+	var ListaMontados = Estructuras.ListaMontados{}
+	ListaMontados = (&ListaMontados).GetLista()
+	Uss := SearchID(parameters.Id, ListaMontados)
 	path := Uss.Path
-	StartPoint := Uss.Startpoint
+	StartPoint := Uss.StartPoint
 
 	dsk, err := os.OpenFile(path, os.O_RDWR, 0777)
 	defer dsk.Close()
@@ -177,8 +176,9 @@ func RepSb(parameters Estructuras.ParamStruct) {
 }
 
 func RepDisk(parammeters Estructuras.ParamStruct) {
-	var Uss = Estructuras.User{}
-	Uss = (&Uss).Getusser()
+	var ListaMontados = Estructuras.ListaMontados{}
+	ListaMontados = (&ListaMontados).GetLista()
+	Uss := SearchID(parammeters.Id, ListaMontados)
 	path := Uss.Path
 
 	dsk, err := os.OpenFile(path, os.O_RDWR, 0777)
@@ -291,4 +291,15 @@ func RemoveDot(Ruta string) string {
 	}
 
 	return retorno
+}
+
+func SearchID(ID string, Part Estructuras.ListaMontados) Estructuras.PartMounted {
+	Empt := Estructuras.PartMounted{}
+	for i := 0; i < len(Part.Montado); i++ {
+		if Part.Montado[i].Id == ID {
+			return Part.Montado[i]
+		}
+	}
+
+	return Empt
 }

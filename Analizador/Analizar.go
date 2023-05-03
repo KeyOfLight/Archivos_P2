@@ -16,15 +16,34 @@ func Analizar(Cadena string) {
 	var entradacmd string
 	entradacmd = Cadena
 	entradacmd = strings.ToLower(entradacmd)
+	Separado := false
 
 	VectorEntrada := strings.Split(entradacmd, " ")
+	var Aux []string
+	path := ""
+	for i := 0; i < len(VectorEntrada); i++ {
+		param := VectorEntrada[i]
+		if strings.Contains(param, ">path=\"") {
+			path += strings.Replace(param, "\"", "", -1)
+			Separado = true
+		} else if Separado {
+			path += " " + strings.Replace(param, "\"", "", -1)
+			if strings.Contains(param, "\"") {
+				Separado = false
+				Aux = append(Aux, path)
+			}
+		} else {
+			Aux = append(Aux, param)
+		}
+
+	}
 	var comadno string
 	var parametros []string
-	for i := 0; i < len(VectorEntrada); i++ {
+	for i := 0; i < len(Aux); i++ {
 		if i == 0 {
-			comadno = VectorEntrada[i]
+			comadno = Aux[i]
 		} else {
-			parametros = append(parametros, VectorEntrada[i])
+			parametros = append(parametros, Aux[i])
 		}
 	}
 
@@ -249,11 +268,20 @@ func ReconocerComando(comando string, Parametros []string) {
 			}
 		}
 		operaciones.Mkdir(cmd)
-	} else if comando == "pausa" {
+	} else if strings.Contains(comando, "pause") {
 
 		fmt.Println("--------------PAUSA-----------------")
 		scanner := bufio.NewScanner(os.Stdin)
 		scanner.Scan()
+
+	} else if strings.Contains(comando, "#") {
+		fmt.Print(comando)
+		for i := 0; i < len(Parametros); i++ {
+			param := Parametros[i]
+			fmt.Print(" " + param)
+		}
+		fmt.Println(" ")
+
 	} else if comando == "rep" {
 		cmd.Nombre = "rep"
 

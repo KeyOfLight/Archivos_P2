@@ -83,6 +83,7 @@ func CrearParticion(parameters Estructuras.ParamStruct) {
 					var bufferControl bytes.Buffer
 					binary.Write(&bufferControl, binary.BigEndian, &mbr)
 					_, err = dsk.Write(bufferControl.Bytes())
+					PrintPartAct(mbr.Mbr_partition[i])
 					return
 
 				}
@@ -114,6 +115,7 @@ func CrearParticion(parameters Estructuras.ParamStruct) {
 					var bufferControl bytes.Buffer
 					binary.Write(&bufferControl, binary.BigEndian, &mbr)
 					_, err = dsk.Write(bufferControl.Bytes())
+					PrintPartAct(mbr.Mbr_partition[i])
 					return
 
 				}
@@ -142,7 +144,9 @@ func CrearParticion(parameters Estructuras.ParamStruct) {
 				fmt.Println("Para crear una particion logica es necesario que exista una particion extendida")
 				return
 			}
-
+			if parameters.Nombre == "logicp1" {
+				fmt.Println("ya")
+			}
 			if SearchNameEBR(PartExt, parameters.Nombre, parameters) {
 				fmt.Println("No se puede crear una particion logica con un nombre ya utilizado")
 				return
@@ -171,6 +175,9 @@ func CrearParticion(parameters Estructuras.ParamStruct) {
 			var bufferControl bytes.Buffer
 			binary.Write(&bufferControl, binary.BigEndian, &EmptPart)
 			escribirBytes(dsk, bufferControl.Bytes())
+
+			PrintEbrAct(EmptPart)
+
 			return
 		} else {
 			fmt.Println("La particion debe ser menor al tam total del disco")
@@ -219,6 +226,28 @@ func ActivarEBR(parameters Estructuras.ParamStruct, size int64, Ebr Estructuras.
 	Ebr.Part_status = '1'
 
 	return Ebr
+
+}
+
+func PrintPartAct(Ebr Estructuras.Particion) {
+
+	println("-------------------------------------------------")
+	println("Nombre: " + string(Ebr.Part_name[:]))
+	println("Part_fit: " + string(Ebr.Part_fit))
+	println("Ebr.Part_size: " + fmt.Sprint(Ebr.Part_size))
+	println("Ebr.Part_status: " + string(Ebr.Part_status))
+	println("-------------------------------------------------")
+
+}
+
+func PrintEbrAct(Ebr Estructuras.EBR) {
+
+	println("-------------------------------------------------")
+	println("Nombre: " + string(Ebr.Part_name[:]))
+	println("Part_fit: " + string(Ebr.Part_fit))
+	println("Ebr.Part_size: " + fmt.Sprint(Ebr.Part_size))
+	println("Ebr.Part_status: " + string(Ebr.Part_status))
+	println("-------------------------------------------------")
 
 }
 
@@ -292,9 +321,14 @@ func GetPositionEBRFF(PartExt Estructuras.Particion, size int64, parameters Estr
 		}
 
 		dsk.Seek((tempEbr.Part_next), 0)
-		errb := binary.Read(bufferControl, binary.BigEndian, &tempEbr)
-		if errb != nil {
+		var sizeMbr int64 = int64(unsafe.Sizeof(tempEbr))
+		dataControl := ReadBytes(dsk, int(sizeMbr))
+		rbufferControl := bytes.NewBuffer(dataControl)
+		err2 := binary.Read(rbufferControl, binary.BigEndian, &tempEbr)
+		if err2 != nil {
 			log.Fatal("binary.Read failed", err)
+			fmt.Println(errb)
+			break
 		}
 
 	}
@@ -323,14 +357,6 @@ func GetPositionEBRFF(PartExt Estructuras.Particion, size int64, parameters Estr
 		var bufferControl bytes.Buffer
 		binary.Write(&bufferControl, binary.BigEndian, &Reescribir)
 		escribirBytes(dsk, bufferControl.Bytes())
-
-		RbufferControl := bytes.NewBuffer(dataControl)
-
-		dsk.Seek((AllArrays[0].Part_next), 0)
-		errb := binary.Read(RbufferControl, binary.BigEndian, &tempEbr)
-		if errb != nil {
-			log.Fatal("binary.Read failed", err)
-		}
 
 		PosEbr.Part_start = nextpos
 		PosEbr.Part_next = -1
@@ -364,8 +390,8 @@ func GetPositionEBRFF(PartExt Estructuras.Particion, size int64, parameters Estr
 
 				return PosEbr
 
-			} else { //WIP
-				if AllArrays[i+1].Part_status != '1' {
+			} else {
+				if AllArrays[i].Part_next == -1 {
 					PosEbr.Part_next = -1
 					Actual.Part_next = Actual.Part_start + Actual.Part_size
 					PosEbr.Part_start = Actual.Part_start + Actual.Part_size
