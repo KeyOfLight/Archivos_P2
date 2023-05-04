@@ -61,16 +61,20 @@ func Rmgrp(parameters Estructuras.ParamStruct) {
 	SuperBlock := ReadSBlock(Estructuras.Sblock{}, StartPoint, dsk)
 	Info := LeerArchivoMkfs(SuperBlock, "users.txt", dsk)
 	Splited := strings.Split(Info, "\n")
-
+	nulo := '0'
 	for i := 0; i < len(Splited); i++ {
 		if strings.Contains(Splited[i], ",G,"+parameters.Nombre) {
-			Splited[0] = "0"
+			actual := []rune(Splited[i])
+			actual[0] = (nulo)
+			Splited[i] = string(actual)
 			break
 		}
 	}
 	Novo := ""
 	for _, i := range Splited {
-		Novo += i
+		Novo += i + "\n"
 	}
+	Limpio := []rune(Novo)
+	Novo = string(Limpio[:len(Limpio)-1])
 	WrtArchivoMkfs(SuperBlock, "users.txt", dsk, Novo, true)
 }

@@ -185,12 +185,12 @@ func ReconocerComando(comando string, Parametros []string) {
 				param = strings.ReplaceAll(param, ">id=", "")
 				param = strings.ReplaceAll(param, "\"", "")
 				cmd.Nombre = param
-			} else if strings.Contains(param, ">user=") {
-				param = strings.ReplaceAll(param, ">user=", "")
+			} else if strings.Contains(param, ">usuario=") {
+				param = strings.ReplaceAll(param, ">usuario=", "")
 				param = strings.ReplaceAll(param, "\"", "")
 				cmd.User = param
-			} else if strings.Contains(param, ">pwd=") {
-				param = strings.ReplaceAll(param, ">pwd=", "")
+			} else if strings.Contains(param, ">password=") {
+				param = strings.ReplaceAll(param, ">password=", "")
 				param = strings.ReplaceAll(param, "\"", "")
 				cmd.Pwd = param
 			}

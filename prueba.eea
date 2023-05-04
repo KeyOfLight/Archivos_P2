@@ -22,7 +22,7 @@ Mount >name=Brotato2 >path=/home/useer/Disco1.dsk
 
 mkfs >id=270brotato1
 
-login >user=root >pwd=123 >id=270brotato1
+login >usuario=root >password=123 >id=270brotato1
 
 mkgrp >name=usuarios
 

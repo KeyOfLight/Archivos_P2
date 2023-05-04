@@ -13,6 +13,7 @@ func Mkdir(parameters Estructuras.ParamStruct) {
 	StartPoint := Uss.Startpoint
 	path := Uss.Path
 	VirtualPath := parameters.Direccion
+	Fullbod := false
 
 	dsk, err := os.OpenFile(path, os.O_RDWR, 0777)
 	defer dsk.Close()
@@ -27,5 +28,10 @@ func Mkdir(parameters Estructuras.ParamStruct) {
 		pathSeparado = append(pathSeparado[1:])
 	}
 
-	SrchInodo(0, dsk, pathSeparado, StartPoint, true, 0)
+	if parameters.Pwd != "" {
+		Fullbod = true
+	}
+
+	SrchInodo(0, dsk, pathSeparado, StartPoint, Fullbod, 0)
+	fmt.Println("Carpeta Creada (y) en: " + VirtualPath)
 }

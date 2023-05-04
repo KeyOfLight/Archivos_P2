@@ -62,6 +62,8 @@ func Lgn(parameters Estructuras.ParamStruct) {
 			}
 		}
 	}
+
+	fmt.Println("No se pudo ingresar sesion, no existe el usuario: " + parameters.User)
 }
 
 func LgOut() {

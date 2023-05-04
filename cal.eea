@@ -65,14 +65,14 @@ Login >password=567 >usuario=roca >id=270part1 >nada
 #Debe dar error porque no existe usuario logeado
 logout
 
-Login >password=123 >usuario=root >id=621a >nada
+Login >password=123 >usuario=root >id=270part1 >nada
 
 pause
 
 #CREACION DE GRUPOS
-mkgrp >naMe=Archivos
-mkgrp >NamE=Arqui
-mkgrp >name="Compi 2"
+mkgrp >naMe=Archivos >nada
+mkgrp >NamE=Arqui >nada
+mkgrp >name="Compi 2" >nada
 
 pause
 
@@ -82,7 +82,7 @@ rmgrp >name=Arqui >nada
 pause
 
 #REPORTES FILE
-rep >id=621a >ruta=/users.txt >name=file >Path=/home/parte2/reportes/users_1.dot
+rep >id=270part1 >ruta=users.txt >name=file >Path=/home/parte2/reportes/users_1.dot >nada
 
 pause
 
@@ -99,55 +99,61 @@ rmusr >usuario=user3 >nada
 pause
 
 #REPORTES FILE
-rep >id=621a >ruta="/users.txt" >name=file >Path=/home/parte2/reportes/users_2.dot
+rep >id=270part1 >ruta="users.txt" >name=file >Path=/home/parte2/reportes/users_2.dot >nada
 
 pause
 
 #CREACION DE CARPETAS
-Mkdir >P >path=/home/archivos/mia/fase2 >nada
-Mkdir >P >path=/home/archivos/mia/carpeta2 >nada
-Mkdir >P >path=/home/archivos/mia/z >nada
-Mkdir >path=/home/archivos/mia/carpeta2/a1 >nada
-Mkdir >path=/home/archivos/mia/carpeta2/a2 >nada
-Mkdir >path=/home/archivos/mia/carpeta2/a3 >nada
+Mkdir >r >path=home/archivos/mia/fase2 >nada
+Mkdir >r >path=home/archivos/mia/carpeta2 >nada
+Mkdir >r >path=home/archivos/mia/z >nada
+
+pause
+
+Mkdir >path=home/archivos/mia/carpeta2/a1 >nada
+Mkdir >path=home/archivos/mia/carpeta2/a2 >nada
+Mkdir >path=home/archivos/mia/carpeta2/a3 >nada
 
 pause
 
 #REPORTES TREE
-rep >id=621a >Path=/home/parte2/reportes/tree_2.dot >name=tree
+rep >id=270part1 >Path=/home/parte2/reportes/tree_2.dot >name=tree
 
 pause
 
 #CREACION DE ARCHIVOS
-mkfile >path=/home/b1.txt >size=15 >nada
-mkfile >path=/home/b2.txt >size=15 >nada
-mkfile >path=/home/b3.txt >size=15 >nada
+mkfile >path=home/b1.txt >size=15 >nada
+mkfile >path=home/b2.txt >size=15 >nada
+mkfile >path=home/b3.txt >size=15 >nada
 
 #Debe dar error ruta no existe
-mkfile >path=/home/Noexiste/c1.txt >size=25
+mkfile >path=home/Noexiste/c1.txt >size=25 >nada
 
 #Debe dar error size negativo
-mkfile >path="/home/d1.txt" >size=>25
+
+mkfile >path=home/d1.txt >size=-25 >nada
 
 pause
 
 #REPORTES TREE
-rep >id=621a >name=tree >Path=/home/parte2/reportes/tree_3.pdf
+rep >id=270part1 >name=tree >Path=/home/parte2/reportes/tree_3.dot >nada
 
 pause
 
-mkfile >cont="/home/entrada.txt" >path=/home/bcont.txt
+mkfile >cont=/home/entrada.txt >path=home/bcont.txt >nada
 
 pause
 
 #REPORTES TREE
-rep >id=621a  >name=tree >Path=/home/parte2/reportes/tree_4.pdf
+rep >id=270part1  >name=tree >Path=/home/parte2/reportes/tree_4.dot 
+
+pause
 
 #REPORTES FILE
-rep >id=621a >ruta=/home/entrada.txt >name=file >Path=/home/parte2/reportes/users_3.txt
+rep >id=270part1 >ruta=home/entrada.txt >name=file >Path=/home/parte2/reportes/LastiFile.dot
 
 #REPORTES SUPER BLOQUE
-rep >id=621a >name=sb >Path=/home/parte2/reportes/SB_1.pdf
+rep >id=270part1 >name=sb >Path=/home/parte2/reportes/SB_1.dot
 
 pause
 

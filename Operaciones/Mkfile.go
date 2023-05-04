@@ -30,6 +30,10 @@ func Mkfile(parameters Estructuras.ParamStruct) {
 	}
 
 	size, _ := strconv.ParseInt(parameters.Size, 10, 64)
+	if size < 0 {
+		fmt.Println("No se puede crear un archivo con size negativo")
+		return
+	}
 	base := []byte{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
 	var contenido string = ""
 	pivote := 0
@@ -129,7 +133,10 @@ func SrchInodo(pos int64, dsk *os.File, PathSeparado []string, SuperBlockSp int6
 		for i := 0; i < 16; i++ {
 			if int64(InodoArchivo.I_block[i])-1 != -1 {
 				Retornado, _ = findEmptySpaceInCarpet(int64(InodoArchivo.I_block[i])-1, dsk, PathSeparado, SuperBlockSp, Size, false)
-				Next := PathSeparado[1]
+				Next := ""
+				if len(PathSeparado) > 1 {
+					Next = PathSeparado[1]
+				}
 				if strings.Contains(Next, ".") {
 					MkInodeCarpeta(Retornado, dsk, Size, SuperBlock, true)
 				} else {
@@ -146,7 +153,11 @@ func SrchInodo(pos int64, dsk *os.File, PathSeparado []string, SuperBlockSp int6
 			if int64(InodoArchivo.I_block[i])-1 == -1 {
 				var posBlock int64
 				Retornado, posBlock = findEmptySpaceInCarpet(int64(InodoArchivo.I_block[i])-1, dsk, PathSeparado, SuperBlockSp, Size, true)
-				Next := PathSeparado[1]
+				Next := ""
+				if len(PathSeparado) > 1 {
+					Next = PathSeparado[1]
+				}
+
 				InodoArchivo.I_block[i] = byte(posBlock + 1)
 				WriteInode(InodoArchivo, SuperBlock.S_inode_start+SuperBlock.S_inode_size*pos, dsk)
 
