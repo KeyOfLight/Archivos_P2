@@ -140,7 +140,7 @@ rep >id=270part1 >name=tree >Path=/home/parte2/reportes/tree_3.dot >nada
 
 pause
 
-mkfile >cont=/home/entrada.txt >path=home/bcont.txt >nada
+mkfile >cont=/home/ubuntu/Archivos_P2/test.txtr >path=home/bcont.txt >nada
 
 pause
 
@@ -150,7 +150,7 @@ rep >id=270part1  >name=tree >Path=/home/parte2/reportes/tree_4.dot
 pause
 
 #REPORTES FILE
-rep >id=270part1 >ruta=home/entrada.txt >name=file >Path=/home/parte2/reportes/LastiFile.dot
+rep >id=270part1 >ruta=home/bcont.txt >name=file >Path=/home/parte2/reportes/LastiFile.dot
 
 #REPORTES SUPER BLOQUE
 rep >id=270part1 >name=sb >Path=/home/parte2/reportes/SB_1.dot
