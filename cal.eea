@@ -140,7 +140,7 @@ rep >id=270part1 >name=tree >Path=/home/parte2/reportes/tree_3.dot >nada
 
 pause
 
-mkfile >cont=/home/ubuntu/Archivos_P2/test.txtr >path=home/bcont.txt >nada
+mkfile >cont=/home/entrada.txt >path=home/bcont.txt >nada
 
 pause
 
